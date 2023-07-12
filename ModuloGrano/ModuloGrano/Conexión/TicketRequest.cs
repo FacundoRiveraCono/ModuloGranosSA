@@ -100,7 +100,7 @@ namespace ModuloGrano.Conexión
                 LoginAfip.LoginCMSClient serviciowsa = new LoginAfip.LoginCMSClient();
                 LoginAfip.loginCmsResponse oResp = new LoginAfip.loginCmsResponse();
 
-                oResp = serviciowsa.loginCmsAsync(cmsFirmadoBase64).Result;
+                oResp = await serviciowsa.loginCmsAsync(cmsFirmadoBase64);
                 LoginTicketResponse = oResp.loginCmsReturn;
 
             }

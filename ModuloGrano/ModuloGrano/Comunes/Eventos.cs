@@ -204,8 +204,6 @@ namespace ModuloGrano.Comunes
                 oFiltro = oFiltros.Add(SAPbouiCOM.BoEventTypes.et_GOT_FOCUS);
                 oFiltro = oFiltros.Add(SAPbouiCOM.BoEventTypes.et_LOST_FOCUS);
                 oFiltro = oFiltros.Add(SAPbouiCOM.BoEventTypes.et_FORM_DATA_ADD);
-                oFiltro = oFiltros.Add(SAPbouiCOM.BoEventTypes.et_FORM_DATA_LOAD);
-                oFiltro = oFiltros.Add(SAPbouiCOM.BoEventTypes.et_COMBO_SELECT);
                 
                 oFiltro = oFiltros.Add(SAPbouiCOM.BoEventTypes.et_PRINT_LAYOUT_KEY);
                 oFiltro.AddEx(Formularios.Menu.frmMenu);

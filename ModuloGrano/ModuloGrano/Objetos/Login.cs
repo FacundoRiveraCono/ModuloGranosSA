@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -34,27 +33,11 @@ namespace ModuloGrano.Objetos
             string Sign, Token;
             long Cuit = 30604956281;
             WSAfip.Auth Autorizacion = new WSAfip.Auth();
-            Conexión.TicketRequest oLogin = new Conexión.TicketRequest();
-            XmlDocument xmlExpTime = null;
-            XmlDocument xmlResp = null;
-            DateTime ExpTime;
-            //DataHandling oDataHand = null;
-            //Atributos para la creacion del login ticket
-            string strUrlWsaaWsdl = "https://wsaa.afip.gov.ar/ws/services/LoginCms";
-            string strIdServicioNegocio = "wscpe";
-            string strRutaCertSigner = "C:\\WSCPESAP\\alias.p12";
-            SecureString strPasswordSecureString = new SecureString();
-            bool blnVerboseMode = true;
             try
             {
 
                 //Desarmo el login ticket response con el token y el sign para luego enviarlo en las peticiones
                 //El tiempo de duración de esto es de 12 hs
-                if (!oLogin.TokenControl())
-                {
-                    oLogin.ObtenerLoginTicketResponse(strIdServicioNegocio, strUrlWsaaWsdl, strRutaCertSigner, strPasswordSecureString, blnVerboseMode);
-                }
-               
                 xmlSignToken = new XmlDocument();
                 xmlSignToken.Load("C:/WSCPESAP/XmlLoginTicketResponseCP.xml");
                 Sign = xmlSignToken.SelectSingleNode("//sign").InnerText;

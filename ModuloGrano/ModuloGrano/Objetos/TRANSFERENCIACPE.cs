@@ -20,8 +20,6 @@ namespace ModuloGrano.Objetos
             public string AlmacenOrigen { get; set; }
             public string AlmacenOrigen2 { get; set; }
             public string AlmacenOrigen3 { get; set; }
-            public string AlmacenOrigen4 { get; set; }
-            public string AlmacenOrigen5 { get; set; }
             public string AlmacenTercero { get; set; }
             public string CardCode { get; set; }
             public string Address { get; set; }
@@ -30,13 +28,9 @@ namespace ModuloGrano.Objetos
             public string Ubicacion { get; set; }
             public string Ubicacion2 { get; set; }
             public string Ubicacion3 { get; set; }
-            public string Ubicacion4 { get; set; }
-            public string Ubicacion5 { get; set; }
             public double Cantidad1 { get; set; }
             public double Cantidad2 { get; set; }
             public double Cantidad3 { get; set; }
-            public double Cantidad4 { get; set; }
-            public double Cantidad5 { get; set; }
             public string Norma1 { get; set; }
             public string Norma2 { get; set; }
             public string Norma5 { get; set; }
@@ -47,8 +41,6 @@ namespace ModuloGrano.Objetos
             public int AbsEntry { get; set; } = 0;
             public int AbsEntry2 { get; set; } = 0;
             public int AbsEntry3 { get; set; } = 0;
-            public int AbsEntry4 { get; set; } = 0;
-            public int AbsEntry5 { get; set; } = 0;
             public int id__ { get; set; }
         }
     }

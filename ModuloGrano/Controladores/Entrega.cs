@@ -1,4 +1,5 @@
 ﻿using ModuloGrano.Objetos;
+using SAPbobsCOM;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
@@ -25,44 +26,51 @@ namespace ModuloGrano.Controladores
             try
             {
                 oEntrega = ArmarEquivalencias(oDelivery);
-                using (StreamReader str = new StreamReader(ruta))
+                if (oEntrega.NroContrato2 != "Error Cantidad")
                 {
-                    SessionID = str.ReadLine();
-                    //File.SetAttributes(ruta, FileAttributes.Hidden);
-                }
-                var json = JsonSerializer.Serialize(oEntrega);
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                
-                var baseAddress = new Uri("http://br01-srv-db02:50002/b1s/v1/" + String.Format("{0}",TipoEntrega));
-
-                String Cookie = String.Format("B1SESSION={0}", SessionID);
-                using (var handler = new HttpClientHandler { UseCookies = false })
-                using (var client = new HttpClient(handler) { BaseAddress = baseAddress })
-                {
-                    var message = new HttpRequestMessage(HttpMethod.Post, baseAddress);
-                    message.Content = data;
-                    message.Headers.Add("Cookie", Cookie);
-                    var result = client.SendAsync(message).Result;
-                    if (result.StatusCode == HttpStatusCode.Unauthorized)
+                    using (StreamReader str = new StreamReader(ruta))
                     {
-                        Comunes.ConexiónSL oCon = new Comunes.ConexiónSL();
-                        SessionID = oCon.ConectarSL();
+                        SessionID = str.ReadLine();
+                        //File.SetAttributes(ruta, FileAttributes.Hidden);
                     }
-                    else
+                    var json = JsonSerializer.Serialize(oEntrega);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var baseAddress = new Uri("http://br01-srv-db02:50002/b1s/v1/" + String.Format("{0}", TipoEntrega));
+
+                    String Cookie = String.Format("B1SESSION={0}", SessionID);
+                    using (var handler = new HttpClientHandler { UseCookies = false })
+                    using (var client = new HttpClient(handler) { BaseAddress = baseAddress })
                     {
-                        var content = result.Content.ReadAsStringAsync();
-                        var info = content.Result;
-                        if (result.StatusCode != HttpStatusCode.Created)
+                        var message = new HttpRequestMessage(HttpMethod.Post, baseAddress);
+                        message.Content = data;
+                        message.Headers.Add("Cookie", Cookie);
+                        var result = client.SendAsync(message).Result;
+                        if (result.StatusCode == HttpStatusCode.Unauthorized)
                         {
-                            msgSL = JsonSerializer.Deserialize<Objetos.Root>(info);
-                            error = msgSL.error.message.value;
+                            Comunes.ConexiónSL oCon = new Comunes.ConexiónSL();
+                            SessionID = oCon.ConectarSL();
                         }
                         else
                         {
-                            error = "Ok";
+                            var content = result.Content.ReadAsStringAsync();
+                            var info = content.Result;
+                            if (result.StatusCode != HttpStatusCode.Created)
+                            {
+                                msgSL = JsonSerializer.Deserialize<Objetos.Root>(info);
+                                error = msgSL.error.message.value;
+                            }
+                            else
+                            {
+                                error = "Ok";
+                            }
                         }
-                    }
 
+                    }
+                }
+                else
+                {
+                    error = "Debe aumentar linea de Contrato";
                 }
             }
             catch (Exception)
@@ -76,7 +84,7 @@ namespace ModuloGrano.Controladores
 
         public Objetos.DeliveryNotes ArmarEquivalencias(Objetos.DeliveryNotes oDelivery)
         {
-            var baseAddress2 = new Uri("http://br01-srv-db02:50002/b1s/v1/sml.svc/CV_DESCARGASCPE?$select=*&$filter=CTG" + " " + "eq" + " " + String.Format("'{0}'", oDelivery.U_CTG));
+            var baseAddress2 = new Uri("http://br01-srv-db02:50002/b1s/v1/sml.svc/CV_DESCARGASCPE?$select=*&$filter=CTG" + " " + "eq" + " " + String.Format("'{0}'", oDelivery.U_CTG) + "&$orderby=LineNum");
             string SessionID = "";
             Objetos.DocumentLines oLines = null;
            
@@ -132,10 +140,17 @@ namespace ModuloGrano.Controladores
         {
             Objetos.DESCARGASCPE.Root oEquivalencia = new DESCARGASCPE.Root();
             Objetos.DocumentLines oLines = null;
+             int LineNum = 0;
+            double Acumulador = 0;
+            double CanLinea = 0;
+            bool LineaPartida = false;
+            bool difContrato = false;
+            double cantidadtotal = 0;
+            double CanContrato = 0;
           
             try
             {
-                oLines = new Objetos.DocumentLines();
+                //oLines = new Objetos.DocumentLines();
                
                
                 List<Objetos.DocumentLines> oListadoLinea = new List<Objetos.DocumentLines>();
@@ -148,30 +163,168 @@ namespace ModuloGrano.Controladores
                     {
                         if (String.IsNullOrEmpty(oDelivery.NroContrato2))
                         {
-                            oLines.Quantity = item.Cantidad;
-                            oLines.BaseEntry = item.DocEntryOv;
-                            oLines.DiscountPercent = 100.0;
-                            oLines.BaseType = 17;
+                            oLines = new Objetos.DocumentLines();
+                            CanContrato = CanContrato + item.Cantidad;
+                            if (item.ComparteLinea == "NO")
+                            {
+                                
+                                if (LineaPartida)
+                                {
+                                    
+                                    oLines.Quantity = item.Cantidad - Acumulador ;
+                                }
+                                else
+                                {
+                                    oLines.Quantity = item.Cantidad;
+                                }
 
 
+                                oLines.LineNum = LineNum;
+                                oLines.BaseLine = item.LineNum;
+                                oLines.BaseEntry = item.DocEntryOv;
+                                oLines.DiscountPercent = 100.0;
+                                oLines.BaseType = 17;
+                                LineaPartida = false;
+                                //oListadoLinea.Add(oLines);
+                            }
+                            else
+                            {
+                                oLines.LineNum = LineNum;
+                                oLines.BaseLine = item.LineNum;
+                                oLines.BaseEntry = item.DocEntryOv;
+                                oLines.DiscountPercent = 100.0;
+                                oLines.BaseType = 17;
+                                //LineaPartida = false;
+                                CanLinea = (item.Pendiente - item.Cantidad) * -1;
+                                oLines.Quantity = item.Cantidad - CanLinea;
+                               
+
+                                LineaPartida = true;
+                            }
+                            //cantidadtotal = cantidadtotal + oLines.Quantity;
+                          
+                            Acumulador = Acumulador + oLines.Quantity;
                             oListadoLinea.Add(oLines);
+
                         }
                         else
                         {
-                            oLines = new DocumentLines();
-                            oLines.Quantity = item.Cantidad;
-                            oLines.BaseEntry = item.DocEntryOv;
-                            oLines.DiscountPercent = 100.0;
-                            oLines.BaseType = 17;
-                            oListadoLinea.Add(oLines);
+                            //cantidadtotal = cantidadtotal + oLines.Quantity;
+                            if (item.Contrato != oDelivery.NroContrato2)
+                            {
+                                CanContrato = CanContrato + item.Cantidad;
+                                //CountContrto++;
+                                difContrato = true;
+                                oLines = new Objetos.DocumentLines();
+                                if (item.ComparteLinea == "NO")
+                                {
+                                    if (LineaPartida)
+                                    {
+                                        oLines.Quantity = item.Cantidad - Acumulador;
+                                    }
+                                    else
+                                    {
+                                        oLines.Quantity = item.Cantidad;
+                                    }
+
+
+                                    oLines.LineNum = LineNum;
+                                    oLines.BaseLine = item.LineNum;
+                                    oLines.BaseEntry = item.DocEntryOv;
+                                    oLines.DiscountPercent = 100.0;
+                                    oLines.BaseType = 17;
+                                    LineaPartida = false;
+                                    //oListadoLinea.Add(oLines);
+                                }
+                                else
+                                {
+                                    oLines.LineNum = LineNum;
+                                    oLines.BaseLine = item.LineNum;
+                                    oLines.BaseEntry = item.DocEntryOv;
+                                    oLines.DiscountPercent = 100.0;
+                                    oLines.BaseType = 17;
+                                    //LineaPartida = false;
+                                    CanLinea = (item.Pendiente - item.Cantidad) * -1;
+                                    oLines.Quantity = item.Cantidad - CanLinea;
+                                    //Acumulador = Acumulador + oLines.Quantity;
+
+                                    LineaPartida = true;
+                                }
+                               
+                                oListadoLinea.Add(oLines);
+                                Acumulador = Acumulador + oLines.Quantity;
+                            }
+                            else
+                            {
+                                CanContrato = CanContrato + item.Cantidad;
+                                //CountContrto++;
+                                oLines = new Objetos.DocumentLines();
+                                if (item.ComparteLinea == "NO")
+                                {
+                                    if (LineaPartida && !difContrato)
+                                    {
+                                        oLines.Quantity = item.Cantidad - Acumulador;
+                                    }
+                                    //if (LineaPartida && difContrato)
+                                    else
+                                    {
+                                        oLines.Quantity = item.Cantidad;
+                                    }
+
+
+                                    oLines.LineNum = LineNum;
+                                    oLines.BaseLine = item.LineNum;
+                                    oLines.BaseEntry = item.DocEntryOv;
+                                    oLines.DiscountPercent = 100.0;
+                                    oLines.BaseType = 17;
+                                    LineaPartida = false;
+                                    difContrato = false;
+                                    //oListadoLinea.Add(oLines);
+                                }
+                                else
+                                {
+                                    oLines.LineNum = LineNum;
+                                    oLines.BaseLine = item.LineNum;
+                                    oLines.BaseEntry = item.DocEntryOv;
+                                    oLines.DiscountPercent = 100.0;
+                                    oLines.BaseType = 17;
+                                    //LineaPartida = false;
+                                    CanLinea = (item.Pendiente - item.Cantidad) * -1;
+                                    oLines.Quantity = item.Cantidad - CanLinea;
+                                    //Acumulador = Acumulador + oLines.Quantity;
+
+                                    LineaPartida = true;
+                                    difContrato = false;
+                                }
+                               
+                                oListadoLinea.Add(oLines);
+                                Acumulador = Acumulador + oLines.Quantity;
+
+                            }
                         }
+
+                
                         oDelivery.DocumentLines = oListadoLinea;
-                        
+                        oDelivery.DocDate = item.Fecha;
+                        oDelivery.TaxDate = item.Fecha;
+                        oDelivery.DocDueDate = item.Fecha;
                         oDelivery.ShipToCode = item.ShipToCode;
                         oDelivery.U_CTG = item.CTG;
                         oDelivery.DocObjectCode = "15";
+                        oDelivery.CardCode = item.CardCode;
+                        
+                        LineNum = LineNum + 1;
+                        if (!LineaPartida && String.IsNullOrEmpty(oDelivery.NroContrato2))
+                        {
+                            break;
+                        }
 
                     }
+                    if (Acumulador != CanContrato)
+                    {
+                        oDelivery.NroContrato2 = "Error Cantidad";
+                    }
+                    
                 }
             }
             catch (Exception)
@@ -190,7 +343,7 @@ namespace ModuloGrano.Controladores
             {
 
                 String Cookie = String.Format("B1SESSION={0}", SessionID);
-                var baseAddress2 = new Uri("http://br01-srv-db02:50002/b1s/v1/sml.svc/CV_DESCARGASCPE?$select=*&$filter=CTG" + " " + "eq" + " " + String.Format("'{0}'",CTG));
+                var baseAddress2 = new Uri("http://br01-srv-db02:50002/b1s/v1/sml.svc/CV_DESCARGASCPE?$select=*&$filter=CTG" + " " + "eq" + " " + String.Format("'{0}'",CTG) + "&$orderby=LineNum");
                 using (var handler = new HttpClientHandler { UseCookies = false })
                 using (var client = new HttpClient(handler) { BaseAddress = baseAddress2 })
                 {
@@ -210,6 +363,8 @@ namespace ModuloGrano.Controladores
             //return result
             return Resultado;
         }
+
+       
 
     }
 }

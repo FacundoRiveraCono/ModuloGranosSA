@@ -81,8 +81,8 @@ namespace ModuloGrano.Formularios
         {
             try
             {
-                
-                Comunes.ConexiónSAPB1.oSAPB1appl.LoadBatchActions(Properties.Resources.CartaPorteV2TEST2);
+                //Comunes.ConexiónSAPB1.oSAPB1appl.LoadBatchActions(Properties.Resources.Form);
+                Comunes.ConexiónSAPB1.oSAPB1appl.LoadBatchActions(Properties.Resources.CartaPorteV2);
             }
             catch (Exception)
             {

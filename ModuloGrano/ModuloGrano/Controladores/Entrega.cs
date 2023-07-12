@@ -1,6 +1,7 @@
 ﻿using ModuloGrano.Objetos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -9,30 +10,30 @@ using System.Threading.Tasks;
 
 namespace ModuloGrano.Controladores
 {
-     class PurchaseOrders
+     class Entrega
     {
 
-        public string AddOrden(string TipoEntrega, Objetos.PurchaseOrders oPurchase)
+        public string AddEntrega(string TipoEntrega,Objetos.DeliveryNotes oDelivery)
         {
             string SessionID = "";
             string error = "";
             Int64 NroOrden = 0;
             bool Exito = false;
-            Objetos.PurchaseOrders oOc = new Objetos.PurchaseOrders();
+            Objetos.DeliveryNotes oEntrega = new DeliveryNotes();
             Objetos.Root msgSL = new Root();
             string ruta = @"C:\WSCPESAP\SessionSAP\Session.txt";
             try
             {
-                oOc = ArmarEquivalencias(oPurchase);
+                oEntrega = ArmarEquivalencias(oDelivery);
                 using (StreamReader str = new StreamReader(ruta))
                 {
                     SessionID = str.ReadLine();
                     //File.SetAttributes(ruta, FileAttributes.Hidden);
                 }
-                var json = JsonSerializer.Serialize(oPurchase);
+                var json = JsonSerializer.Serialize(oEntrega);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var baseAddress = new Uri("http://br01-srv-db02:50002/b1s/v1/" + String.Format("{0}", TipoEntrega));
+                
+                var baseAddress = new Uri("http://br01-srv-db02:50002/b1s/v1/" + String.Format("{0}",TipoEntrega));
 
                 String Cookie = String.Format("B1SESSION={0}", SessionID);
                 using (var handler = new HttpClientHandler { UseCookies = false })
@@ -73,17 +74,17 @@ namespace ModuloGrano.Controladores
             return error;
         }
 
-        public Objetos.PurchaseOrders ArmarEquivalencias(Objetos.PurchaseOrders oPurchase)
+        public Objetos.DeliveryNotes ArmarEquivalencias(Objetos.DeliveryNotes oDelivery)
         {
-            var baseAddress2 = new Uri("http://br01-srv-db02:50002/b1s/v1/sml.svc/CV_ORDENESFLETE?$select=*&$filter=CTG" + " " + "eq" + " " + String.Format("'{0}'", oPurchase.U_CTG));
+            var baseAddress2 = new Uri("http://br01-srv-db02:50002/b1s/v1/sml.svc/CV_DESCARGASCPE?$select=*&$filter=CTG" + " " + "eq" + " " + String.Format("'{0}'", oDelivery.U_CTG));
             string SessionID = "";
             Objetos.DocumentLines oLines = null;
-
+           
             try
             {
 
                 oLines = new Objetos.DocumentLines();
-
+               
                 List<Objetos.DocumentLines> oListadoLinea = new List<Objetos.DocumentLines>();
                 string ruta = @"C:\WSCPESAP\SessionSAP\Session.txt";
                 StreamReader str = new StreamReader(ruta);
@@ -104,16 +105,16 @@ namespace ModuloGrano.Controladores
                     {
                         Comunes.ConexiónSL oCon = new Comunes.ConexiónSL();
                         SessionID = oCon.ConectarSL();
-                        result = HeaderEnvio(SessionID, oPurchase.U_CTG);
+                        result = HeaderEnvio(SessionID, oDelivery.U_CTG);
                         //Pruebo reenvio con nuevo Sesion
-                        oPurchase = ReenvioSL(result, oPurchase);
+                        oDelivery = ReenvioSL(result, oDelivery);
                         //Hago otro envio
 
                     }
                     else
                     {
-                        result = HeaderEnvio(SessionID, oPurchase.U_CTG);
-                        oPurchase = ReenvioSL(result, oPurchase);
+                        result = HeaderEnvio(SessionID, oDelivery.U_CTG);
+                        oDelivery = ReenvioSL(result, oDelivery);
 
                     }
 
@@ -125,68 +126,59 @@ namespace ModuloGrano.Controladores
                 throw;
             }
 
-            return oPurchase;
+            return oDelivery;
         }
-        private Objetos.PurchaseOrders ReenvioSL(HttpResponseMessage result, Objetos.PurchaseOrders oPurchase)
+        private Objetos.DeliveryNotes ReenvioSL(HttpResponseMessage result, Objetos.DeliveryNotes oDelivery)
         {
-            Objetos.ORDENESFLETE.Root oEquivalencia = new ORDENESFLETE.Root();
+            Objetos.DESCARGASCPE.Root oEquivalencia = new DESCARGASCPE.Root();
             Objetos.DocumentLines oLines = null;
-            Objetos.PurchaseOrdersLines oPurchaseLines = null;
-
+            int LineNum = 0;
+          
             try
             {
-              
-
-                
-                List<Objetos.PurchaseOrdersLines> oListadoLinea = new List<Objetos.PurchaseOrdersLines>();
+                oLines = new Objetos.DocumentLines();
+               
+               
+                List<Objetos.DocumentLines> oListadoLinea = new List<Objetos.DocumentLines>();
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     var content = result.Content.ReadAsStringAsync();
                     var info = content.Result;
-                    oEquivalencia = JsonSerializer.Deserialize<Objetos.ORDENESFLETE.Root>(info);
+                    oEquivalencia = JsonSerializer.Deserialize<Objetos.DESCARGASCPE.Root>(info);
                     foreach (var item in oEquivalencia.value)
                     {
-                        oPurchaseLines = new Objetos.PurchaseOrdersLines();
-                        if (item.ItemCode == "SER-000123")
+                        if (String.IsNullOrEmpty(oDelivery.NroContrato2))
                         {
-                            oPurchaseLines.ItemCode = item.ItemCode;
-                            oPurchaseLines.CostingCode = item.Norma1;
-                            oPurchaseLines.CostingCode2 = item.Norma2;
-                            oPurchaseLines.CostingCode3 = item.Norma3;
-                            oPurchaseLines.CostingCode4 = item.Norma4;
-                            oPurchaseLines.CostingCode5 = item.Norma5;
-                            oPurchaseLines.LineNum = 0;                          
-                            oPurchaseLines.Quantity = item.Quantity * -1;
-                            oPurchaseLines.Price = (double)item.Price;
-                            oListadoLinea.Add(oPurchaseLines);
+                            oLines.Quantity = item.Cantidad;
+                            oLines.BaseEntry = item.DocEntryOv;
+                            oLines.DiscountPercent = 100.0;
+                            oLines.BaseType = 17;
+                            //oLines.LineNum = 0;
 
+
+                            oListadoLinea.Add(oLines);
                         }
-                        if (item.ItemCode == "SER-000029")
+                        else
                         {
-                            oPurchaseLines.ItemCode = item.ItemCode;
-                            oPurchaseLines.CostingCode = item.Norma1;
-                            oPurchaseLines.CostingCode2 = item.Norma2;
-                            oPurchaseLines.CostingCode3 = item.Norma3;
-                            oPurchaseLines.CostingCode4 = item.Norma4;
-                            oPurchaseLines.CostingCode5 = item.Norma5;
-                            oPurchaseLines.LineNum = 1;                          
-                            oPurchaseLines.Quantity = item.Quantity;
-                            oPurchaseLines.Price = (double)item.Price;
-                            oListadoLinea.Add(oPurchaseLines);
+                            oLines = new DocumentLines();
+                            oLines.Quantity = item.Cantidad;
+                           
+                            oLines.LineNum = LineNum;
+                            oLines.BaseEntry = item.DocEntryOv;
+                            oLines.DiscountPercent = 100.0;
+                            oLines.BaseType = 17;
+                            oListadoLinea.Add(oLines);
                         }
-                       
-
-                        oPurchase.UpdateDate = DateTime.Now;
-                        oPurchase.DocDueDate = DateTime.Now;
-                        oPurchase.DocDate = DateTime.Now;
-                        oPurchase.CreationDate = DateTime.Now;
-                        oPurchase.CardCode = item.CardCode;
-                        oPurchase.PTICode = item.PTICode;
-                        //oPurchase.DocObjectCode = "";
+                        oDelivery.DocumentLines = oListadoLinea;
+                        oDelivery.DocDate = item.Fecha;
+                        oDelivery.TaxDate = item.Fecha;
+                        oDelivery.DocDueDate = item.Fecha;
+                        oDelivery.ShipToCode = item.ShipToCode;
+                        oDelivery.U_CTG = item.CTG;
+                        oDelivery.DocObjectCode = "15";
+                        oDelivery.CardCode = item.CardCode;
                         
-                        oPurchase.DocumentLines = oListadoLinea;
-                        
-
+                        LineNum = LineNum + 1;
 
                     }
                 }
@@ -196,7 +188,7 @@ namespace ModuloGrano.Controladores
 
                 throw;
             }
-            return oPurchase;
+            return oDelivery;
 
         }
 
@@ -207,7 +199,7 @@ namespace ModuloGrano.Controladores
             {
 
                 String Cookie = String.Format("B1SESSION={0}", SessionID);
-                var baseAddress2 = new Uri("http://br01-srv-db02:50002/b1s/v1/sml.svc/CV_ORDENESFLETE?$select=*&$filter=CTG" + " " + "eq" + " " + String.Format("'{0}'", CTG));
+                var baseAddress2 = new Uri("http://br01-srv-db02:50002/b1s/v1/sml.svc/CV_DESCARGASCPE?$select=*&$filter=CTG" + " " + "eq" + " " + String.Format("'{0}'",CTG));
                 using (var handler = new HttpClientHandler { UseCookies = false })
                 using (var client = new HttpClient(handler) { BaseAddress = baseAddress2 })
                 {
@@ -227,8 +219,6 @@ namespace ModuloGrano.Controladores
             //return result
             return Resultado;
         }
-
-
 
     }
 }

@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -17,8 +17,279 @@ namespace ModuloGrano.Controladores
     class Transferencia
     {
 
+        //public async void AddTransferencia(Objetos.Transfer oTransferencia)
+        //{
+        //    string SessionID = "";
+        //    //Conexión.ConexiónSAPB1 oCon = new Conexión.ConexiónSAPB1();
+        //    Datos.DataBase oDb = new Datos.DataBase();
 
-        
+        //    try
+        //    {
+        //        //Busco el SessionID de la base de datos
+        //        //SessionID = oCon.GetSessionID();
+        //        SessionID = oDb.GetSessionID();
+        //        var json = JsonSerializer.Serialize(oTransferencia);
+        //        var data = new StringContent(json, Encoding.UTF8, "application/json");
+        //        var baseAddress = new Uri("http://br01-srv-db02:50002/b1s/v1/StockTransfers");
+
+        //        String Cookie = String.Format("B1SESSION={0}", SessionID);
+        //        using (var handler = new HttpClientHandler { UseCookies = false })
+        //        using (var client = new HttpClient(handler) { BaseAddress = baseAddress })
+        //        {
+        //            var message = new HttpRequestMessage(HttpMethod.Post, baseAddress);
+        //            message.Content = data;
+        //            message.Headers.Add("Cookie", Cookie);
+        //            var result = await client.SendAsync(message);
+        //            if (result.StatusCode == HttpStatusCode.Unauthorized)
+        //            {
+        //                //Conexión.ConexiónSAPB1 Sl = new Conexión.ConexiónSAPB1();
+        //                //Sl.ConectarSL();
+        //                this.AddTransferencia(oTransferencia);
+        //            }
+        //            else
+        //            {
+        //                var content = await result.Content.ReadAsStringAsync();
+        //                result.EnsureSuccessStatusCode();
+        //            }
+
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+        //}
+
+        //public async void GetLoteCantidad(decimal Cantidad)
+        //{
+        //    try
+        //    {
+
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+        //}
+
+
+        //public WSAfip.autorizarCPEAutomotorResponse PostCartaPorte(Objetos.Transfer oTransferencia)
+        //{
+        //    string fechatest = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+        //    DateTime Fecha = Convert.ToDateTime(fechatest);
+        //    //string ruta = ;
+        //    bool Productor = false;
+        //    WSAfip.AutorizarAutomotorSolicitud reqSol = new WSAfip.AutorizarAutomotorSolicitud();
+        //    WSAfip.autorizarCPEAutomotorResponse oResponse = new WSAfip.autorizarCPEAutomotorResponse();
+        //    //WSAfip.autorizarCPEAutomotorRequest reqSol = new WSAfip.autorizarCPEAutomotorRequest();
+
+        //    //WSAfip.automoro
+        //    //WSAfip.
+        //    Objetos.SesionAFIP oSesion = new Objetos.SesionAFIP();
+        //    try
+        //    {
+        //        #region Definicion de Objetos
+        //        WSAfip.Auth oauth = new WSAfip.Auth();
+        //        //Defino el resto de objetos correspondiente a los tag del xml 
+        //        WSAfip.DetalleAutomotorRespuesta responseCpe = new WSAfip.DetalleAutomotorRespuesta();
+        //        //Cabecera
+        //        WSAfip.CabeceraAutomotorSolicitud cabecera = new WSAfip.CabeceraAutomotorSolicitud();
+        //        WSAfip.OrigenAutomotorSolicitud CPEOrigen = new WSAfip.OrigenAutomotorSolicitud();
+        //        //WSAfip.OrigenOperadorAutomotorSolicitud CPEOrigenOp = new WSAfip.OrigenOperadorAutomotorSolicitud();
+        //        WSAfip.OrigenProductorAutomotorSolicitud CPEOrigenPr = new WSAfip.OrigenProductorAutomotorSolicitud();
+        //        //DatosCarga
+        //        WSAfip.DatosCargaAutomotorSolicitud CPECarga = new WSAfip.DatosCargaAutomotorSolicitud();
+        //        //Datos de transporte
+        //        WSAfip.TransporteAutomotorSolicitud Transporte = new WSAfip.TransporteAutomotorSolicitud();
+        //        //Destino
+        //        WSAfip.DestinoSolicitud CPEDestino = new WSAfip.DestinoSolicitud();
+        //        //Destino Destinatario
+        //        WSAfip.DestinatarioSolicitud CPEDestinatario = new WSAfip.DestinatarioSolicitud();
+        //        //Intervinientes
+        //        WSAfip.IntervinientesSolicitud CPEInter = new WSAfip.IntervinientesSolicitud();
+        //        WSAfip.CpePortTypeClient cpe = new WSAfip.CpePortTypeClient();
+        //        //WSAfip.autorizarCPEAutomotorResponse oResponse = new WSAfip.autorizarCPEAutomotorResponse();
+
+        //        #endregion
+
+        //        #region Completo Objeto
+
+        //        //auatorización
+        //        oauth = oSesion.CompletarAuth();
+        //        //Fin Autorización
+        //        cabecera.tipoCP = oTransferencia.U_TipoCPE;
+        //        cabecera.cuitSolicitante = 
+        //        cabecera.sucursal = 5;
+        //        //Metodo para obtener el ultimo Nro de Orden
+        //        cabecera.nroOrden = oTransferencia.U_NroOrden;
+        //        reqSol.cabecera = cabecera;
+
+
+        //        CPEOrigenPr.codLocalidad = oTransferencia.U_LocOrigen;
+        //        CPEOrigenPr.codProvincia = oTransferencia.U_ProvOrigen;
+        //        CPEOrigen.productor = CPEOrigenPr;
+
+        //        //reqSol.retiroProductor.
+        //        reqSol.origen = CPEOrigen;
+
+
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITRteVtaPrim))
+        //        {
+
+        //            CPEInter.cuitRemitenteComercialVentaPrimariaSpecified = true;
+        //            CPEInter.cuitRemitenteComercialVentaPrimaria = Convert.ToInt64(oTransferencia.U_CUITRteVtaPrim);
+        //        }
+        //        else { CPEInter.cuitRemitenteComercialVentaPrimariaSpecified = false; }
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITRteVtaSec))
+        //        {
+        //            CPEInter.cuitRemitenteComercialVentaSecundariaSpecified = true;
+        //            CPEInter.cuitRemitenteComercialVentaSecundaria = Convert.ToInt64(oTransferencia.U_CUITRteVtaSec);
+        //        }
+        //        else { CPEInter.cuitRemitenteComercialVentaSecundaria2Specified = false; }
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITRteVtaSec2))
+        //        {
+        //            CPEInter.cuitRemitenteComercialVentaSecundaria2Specified = true;
+        //            CPEInter.cuitRemitenteComercialVentaSecundaria2 = Convert.ToInt64(oTransferencia.U_CUITRteVtaSec2);
+        //        }
+        //        else { CPEInter.cuitRemitenteComercialVentaSecundaria2Specified = false; }
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITMAT))
+        //        {
+        //            CPEInter.cuitMercadoATerminoSpecified = true;
+        //            CPEInter.cuitMercadoATermino = Convert.ToInt64(oTransferencia.U_CUITMAT);
+        //        }
+        //        else { CPEInter.cuitMercadoATerminoSpecified = false; }
+        //        //if (!String.IsNullOrEmpty(oTransferencia.U_CUITRteComerProd))
+        //        //{
+        //        //    CPEInter.com= true;
+        //        //    CPEInter.cuitRemitenteComercialVentaPrimaria = Convert.ToInt64(oTransferencia.U_CUITRteComerProd);
+        //        //}
+        //        //else { CPEInter.cuitRemitenteComercialVentaPrimariaSpecified = false; }
+        //        //if (!String.IsNullOrEmpty(oTransferencia.U_CUITRteComerProd))
+        //        //{
+        //        //    CPEInter.CUIT
+        //        //}
+        //        //CPEInter. 
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITCorrVtaPrim))
+        //        {
+        //            CPEInter.cuitCorredorVentaPrimariaSpecified = true;
+        //            CPEInter.cuitCorredorVentaPrimaria = Convert.ToInt64(oTransferencia.U_CUITCorrVtaPrim);
+        //        }
+        //        else { CPEInter.cuitCorredorVentaPrimariaSpecified = false; }
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITCorrVtaSec))
+        //        {
+        //            CPEInter.cuitCorredorVentaSecundariaSpecified = true;
+        //            CPEInter.cuitCorredorVentaSecundaria = Convert.ToInt64(oTransferencia.U_CUITCorrVtaSec);
+        //        }
+        //        else
+        //        {
+        //            CPEInter.cuitCorredorVentaSecundariaSpecified = false;
+        //        }
+
+        //        //Falta agregar remitente comercial venta secundaria
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITEntregador))
+        //        {
+        //            CPEInter.cuitRepresentanteEntregadorSpecified = true;
+        //            CPEInter.cuitRepresentanteEntregador = Convert.ToInt64(oTransferencia.U_CUITEntregador);
+        //        }
+        //        else { CPEInter.cuitRepresentanteEntregadorSpecified = false; }
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITRecibidor))
+        //        {
+        //            CPEInter.cuitRepresentanteRecibidorSpecified = true;
+        //            CPEInter.cuitRepresentanteRecibidor = Convert.ToInt64(oTransferencia.U_CUITRecibidor);
+
+        //        }
+        //        else { CPEInter.cuitRepresentanteRecibidorSpecified = false; }
+        //        reqSol.intervinientes = CPEInter;
+
+
+        //        if (oTransferencia.U_EsProd == "Y") { reqSol.esSolicitanteCampo = true; } else { reqSol.esSolicitanteCampo = false; }
+        //        if (oTransferencia.U_Retiro == "Y") { reqSol.correspondeRetiroProductor = true; } else { reqSol.correspondeRetiroProductor = false; }
+        //        //if (oTransferencia.U_EsCampo == "Y") { reqSol.}
+        //        //if (oTransferencia.U_EsCampo == "Y") { reqSol.esSolicitanteCampo = true; } else { reqSol.esSolicitanteCampo = false; }
+
+        //        //Datos de carga
+        //        //Codigo de Grano
+        //        CPECarga.codGrano = Convert.ToInt16(oTransferencia.U_Grano);
+        //        CPECarga.cosecha = Convert.ToInt16(oTransferencia.U_Cosecha);
+        //        CPECarga.pesoBruto = Convert.ToInt32(oTransferencia.U_PBruto);
+        //        CPECarga.pesoTara = Convert.ToInt32(oTransferencia.U_PTara);
+
+        //        Transporte.fechaHoraPartida = Fecha.AddMinutes(15);
+        //        Transporte.kmRecorrer = Convert.ToInt16(oTransferencia.U_KmRecorrer);
+        //        if (oTransferencia.U_Tarifa > 0)
+        //        {
+        //            Transporte.tarifaSpecified = true;
+        //            Transporte.tarifa = Convert.ToDecimal(oTransferencia.U_Tarifa);
+        //        }
+        //        else
+        //        {
+        //            Transporte.tarifaSpecified = false;
+        //        }
+
+        //        if (!String.IsNullOrEmpty(oTransferencia.U_CUITPagadorFlete))
+        //        {
+        //            Transporte.cuitPagadorFleteSpecified = true;
+        //            Transporte.cuitPagadorFlete = Convert.ToInt64(oTransferencia.U_CUITPagadorFlete);
+        //        }
+        //        else
+        //        {
+        //            Transporte.cuitPagadorFleteSpecified = false;
+        //        }
+
+
+        //        Transporte.cuitTransportista = Convert.ToInt64(oTransferencia.U_CUITTransportista);
+        //        Transporte.cuitChofer = Convert.ToInt64(oTransferencia.U_CUITChofer);
+        //        Transporte.dominio = new string[] { oTransferencia.U_PatCamion, oTransferencia.U_PatAcoplado };
+        //        reqSol.transporte = Transporte;
+        //        //reqSol.datosCarga = CPECarga;
+        //        reqSol.datosCarga = CPECarga;
+        //        //Fin datos de Carga
+        //        //Datos Destino               
+        //        CPEDestino.esDestinoCampo = false;
+        //        CPEDestino.codLocalidad = oTransferencia.U_LocDestino;//Crear Campo en SAP
+        //        CPEDestino.codProvincia = oTransferencia.U_ProvDestino;
+        //        CPEDestino.plantaSpecified = true;
+        //        CPEDestino.planta = oTransferencia.U_PlaDest;
+        //        CPEDestino.cuit = Convert.ToInt64(oTransferencia.U_CUITDestino);
+        //        //reqSol.destino = CPEDestino;
+        //        reqSol.destino = CPEDestino;
+        //        //Fin Datos Destino
+        //        //Inicio datos Destinatario
+        //        CPEDestinatario.cuit = Convert.ToInt64(oTransferencia.U_CUITDestinatario);
+        //        //reqSol.destinatario = CPEDestinatario;
+        //        reqSol.destinatario = CPEDestinatario;
+        //        reqSol.observaciones = oTransferencia.Comments;
+
+        //        //Fin Datos Destinatario
+        //        GuardarxmlEnviadoEmisionEgreso(reqSol);
+
+        //        oResponse = cpe.autorizarCPEAutomotorAsync(oauth, reqSol).Result;
+        //        //Escribir pdf
+        //        //if (oResponse.respuesta.pdf != null)
+        //        //{
+        //        //    byte[] pdf = oResponse.respuesta.pdf;
+        //        //    File.WriteAllBytes(@"C:\WSCPESAP\PDF\prueba.pdf", pdf);
+
+        //        //}
+
+
+        //        GuardarxmlRespuestaEmisionEgreso(oResponse);
+        //        //Crear Campo Codigo Provincia Destino
+        //        //if (oTransferencia.campo)              
+        //        #endregion
+
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+
+        //    return oResponse;
+
+        //}
 
         public Objetos.ConsultarCPEAutomotorResponse GetCartaPorte(Int64 CTG)
         {
@@ -31,7 +302,7 @@ namespace ModuloGrano.Controladores
                 string oError = "";
                 WSAfip.dummyResponse oDummy = new dummyResponse();
                 WSAfip.CpePortTypeClient oClient = new CpePortTypeClient();
-                WSAfip.CartaPorte oCpe = new WSAfip.CartaPorte();
+                WSAfip.CartaPorte oCpe = new CartaPorte();
                 WSAfip.Auth oAuth = new WSAfip.Auth();
                 Objetos.SesionAFIP oSesion = new Objetos.SesionAFIP();
                 oAuth = oSesion.CompletarAuth();
@@ -421,16 +692,12 @@ namespace ModuloGrano.Controladores
             Objetos.StockTransferLinesBinAllocations oUbicacion = null;
             Objetos.StockTransferLinesBinAllocations oUbicacionB = null;
             Objetos.StockTransferLinesBinAllocations oUbicacionC = null;
-            Objetos.StockTransferLinesBinAllocations oUbicacionD = null;
-            Objetos.StockTransferLinesBinAllocations oUbicacionE = null;
             try
             {
 
                 oUbicacion = new Objetos.StockTransferLinesBinAllocations();
                 oUbicacionB = new Objetos.StockTransferLinesBinAllocations();
                 oUbicacionC = new Objetos.StockTransferLinesBinAllocations();
-                oUbicacionD = new Objetos.StockTransferLinesBinAllocations();
-                oUbicacionE = new Objetos.StockTransferLinesBinAllocations();
                 List<Objetos.StockTransferLinesBinAllocations> oListadoUbicacion = null;
                 List<Objetos.StockTransferLines> oListadoLinea = new List<Objetos.StockTransferLines>();
                 if (result.StatusCode == HttpStatusCode.OK)
@@ -532,59 +799,18 @@ namespace ModuloGrano.Controladores
                                 oListadoLinea.Add(oLines);
 
                             }
-                            if (!String.IsNullOrEmpty(item.Ubicacion4))
-                            {
-
-                                //Defino Tercer Linea
-                                oLines = new Objetos.StockTransferLines();
-                                oListadoUbicacion = new List<Objetos.StockTransferLinesBinAllocations>();
-                                //Ubicacion 1
-                                oUbicacionD.BinActionType = "batFromWarehouse";
-                                oUbicacionD.Quantity = item.Cantidad4;
-                                oUbicacionD.BinAbsEntry = item.AbsEntry4;
-                                oUbicacionD.AllowNegativeQuantity = "tYES";
-                                oListadoUbicacion.Add(oUbicacionD);
-                                oLines.ItemCode = item.GranoSAP;
-                                oLines.FromWarehouseCode = item.AlmacenOrigen4;
-                                oLines.WarehouseCode = item.AlmacenTercero;
-                                oLines.Quantity = item.Cantidad4;
-                                oLines.DistributionRule = item.Norma1;
-                                oLines.DistributionRule2 = item.Norma2;
-                                oLines.DistributionRule3 = item.Norma3;
-                                oLines.DistributionRule4 = item.Norma4;
-                                oLines.DistributionRule5 = item.Norma5;
-
-                                oLines.StockTransferLinesBinAllocations = oListadoUbicacion;
-                                oListadoLinea.Add(oLines);
-
-                            }
-                            if (!String.IsNullOrEmpty(item.Ubicacion5))
-                            {
-
-                                //Defino Tercer Linea
-                                oLines = new Objetos.StockTransferLines();
-                                oListadoUbicacion = new List<Objetos.StockTransferLinesBinAllocations>();
-                                //Ubicacion 1
-                                oUbicacionE.BinActionType = "batFromWarehouse";
-                                oUbicacionE.Quantity = item.Cantidad5;
-                                oUbicacionE.BinAbsEntry = item.AbsEntry5;
-                                oUbicacionE.AllowNegativeQuantity = "tYES";
-                                oListadoUbicacion.Add(oUbicacionE);
-                                oLines.ItemCode = item.GranoSAP;
-                                oLines.FromWarehouseCode = item.AlmacenOrigen5;
-                                oLines.WarehouseCode = item.AlmacenTercero;
-                                oLines.Quantity = item.Cantidad5;
-                                oLines.DistributionRule = item.Norma1;
-                                oLines.DistributionRule2 = item.Norma2;
-                                oLines.DistributionRule3 = item.Norma3;
-                                oLines.DistributionRule4 = item.Norma4;
-                                oLines.DistributionRule5 = item.Norma5;
-
-                                oLines.StockTransferLinesBinAllocations = oListadoUbicacion;
-                                oListadoLinea.Add(oLines);
-
-                            }
                         }
+                        //oLines.ItemCode = item.GranoSAP;
+                        //oLines.FromWarehouseCode = item.AlmacenOrigen;
+                        //oLines.WarehouseCode = item.AlmacenTercero;
+                        //oLines.Quantity = oTransferencia.U_PesoNeto;
+                        //oLines.DistributionRule = item.Norma1;
+                        //oLines.DistributionRule2 = item.Norma2;
+                        //oLines.DistributionRule3 = item.Norma3;
+                        //oLines.DistributionRule4 = item.Norma4;
+                        //oLines.DistributionRule5 = item.Norma5;
+                        //oLines.StockTransferLinesBinAllocations = oListadoUbicacion;
+                        //oListadoLinea.Add(oLines);
                         oTransferencia.StockTransferLines = oListadoLinea;
                         oTransferencia.CardCode = item.CardCode;
                         oTransferencia.ShipToCode = item.Address;
@@ -595,7 +821,7 @@ namespace ModuloGrano.Controladores
                         oTransferencia.DueDate = item.Fecha;
                         oTransferencia.TaxDate = item.Fecha;
 
-                       
+                        //oTransferencia.U_CTG = item.CTG;
 
                     }
                 }
@@ -637,8 +863,6 @@ namespace ModuloGrano.Controladores
             //return result
             return Resultado;
         }
-
-
 
 
 

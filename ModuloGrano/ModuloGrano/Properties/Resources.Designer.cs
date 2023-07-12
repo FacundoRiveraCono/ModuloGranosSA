@@ -99,56 +99,6 @@ namespace ModuloGrano.Properties {
         ///&lt;Application&gt;
         ///  &lt;forms&gt;
         ///    &lt;action type=&quot;add&quot;&gt;
-        ///      &lt;form appformnumber=&quot;UDO_FT_CARTAPORTE&quot; FormType=&quot;UDO_FT_CARTAPORTE&quot; type=&quot;4&quot; BorderStyle=&quot;4&quot; uid=&quot;CartaPorte&quot; title=&quot;Carta de Porte&quot; visible=&quot;1&quot; default_button=&quot;&quot; pane=&quot;1&quot; color=&quot;0&quot; left=&quot;0&quot; top=&quot;0&quot; width=&quot;985&quot; height=&quot;564&quot; client_width=&quot;&quot; client_height=&quot;&quot; AutoManaged=&quot;0&quot; SupportedModes=&quot;15&quot; ObjectType=&quot;CARTAPORTE&quot; mode=&quot;3&quot;&gt;
-        ///        &lt;datasources&gt;
-        ///          &lt;DataTables /&gt;
-        ///          &lt;dbdatasources&gt;
-        ///          [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string CartaPorteV2TEST {
-            get {
-                return ResourceManager.GetString("CartaPorteV2TEST", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-16&quot;?&gt;
-        ///&lt;Application&gt;
-        ///  &lt;forms&gt;
-        ///    &lt;action type=&quot;add&quot;&gt;
-        ///      &lt;form appformnumber=&quot;UDO_FT_CARTAPORTE&quot; FormType=&quot;UDO_FT_CARTAPORTE&quot; type=&quot;4&quot; BorderStyle=&quot;4&quot; uid=&quot;CartaPorte&quot; title=&quot;Carta de Porte&quot; visible=&quot;1&quot; default_button=&quot;&quot; pane=&quot;1&quot; color=&quot;0&quot; left=&quot;0&quot; top=&quot;0&quot; width=&quot;985&quot; height=&quot;564&quot; client_width=&quot;&quot; client_height=&quot;&quot; AutoManaged=&quot;0&quot; SupportedModes=&quot;15&quot; ObjectType=&quot;CARTAPORTE&quot; mode=&quot;3&quot;&gt;
-        ///        &lt;datasources&gt;
-        ///          &lt;DataTables /&gt;
-        ///          &lt;dbdatasources&gt;
-        ///          [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string CartaPorteV2TEST2 {
-            get {
-                return ResourceManager.GetString("CartaPorteV2TEST2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-16&quot;?&gt;
-        ///&lt;Application&gt;
-        ///  &lt;forms&gt;
-        ///    &lt;action type=&quot;add&quot;&gt;
-        ///      &lt;form appformnumber=&quot;UDO_FT_CARTAPORTE&quot; FormType=&quot;UDO_FT_CARTAPORTE&quot; type=&quot;4&quot; BorderStyle=&quot;4&quot; uid=&quot;CartaPorte&quot; title=&quot;Carta de Porte&quot; visible=&quot;1&quot; default_button=&quot;&quot; pane=&quot;1&quot; color=&quot;0&quot; left=&quot;436&quot; top=&quot;19&quot; width=&quot;1177&quot; height=&quot;648&quot; client_width=&quot;1155&quot; client_height=&quot;592&quot; AutoManaged=&quot;0&quot; SupportedModes=&quot;15&quot; ObjectType=&quot;CARTAPORTE&quot; mode=&quot;3&quot; modality=&quot;0&quot;&gt;
-        ///        &lt;datasources&gt;
-        ///          &lt;dbdatasources&gt;
-        ///            [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string CartaPortev4 {
-            get {
-                return ResourceManager.GetString("CartaPortev4", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-16&quot;?&gt;
-        ///&lt;Application&gt;
-        ///  &lt;forms&gt;
-        ///    &lt;action type=&quot;add&quot;&gt;
         ///      &lt;form appformnumber=&quot;UDO_FT_FIJACIONES&quot; FormType=&quot;UDO_FT_FIJACIONES&quot; type=&quot;4&quot; BorderStyle=&quot;4&quot; uid=&quot;UDO_F_FIJACIONES&quot; title=&quot;Fijacion de Precio&quot; visible=&quot;1&quot; default_button=&quot;&quot; pane=&quot;1&quot; color=&quot;0&quot; left=&quot;370&quot; top=&quot;127&quot; width=&quot;717&quot; height=&quot;399&quot; client_width=&quot;&quot; client_height=&quot;&quot; AutoManaged=&quot;1&quot; SupportedModes=&quot;15&quot; ObjectType=&quot;FIJACIONES&quot; mode=&quot;3&quot;&gt;
         ///        &lt;datasources&gt;
         ///          &lt;DataTables /&gt;

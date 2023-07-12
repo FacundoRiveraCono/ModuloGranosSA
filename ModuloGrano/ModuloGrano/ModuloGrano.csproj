@@ -10,26 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="bin\x64\Release\net6.0-windows\CartaPorteV2TEST2.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="bin\x64\Release\net6.0-windows\CartaPorteV2TEST.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="bin\x64\Release\net6.0-windows\CartaPorteV5.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="bin\x64\Release\net6.0-windows\CartaPortev4.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="bin\x64\Release\net6.0-windows\CartaPorteV3.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="bin\x64\Release\net6.0-windows\CartaPorteV2.xml" />
   </ItemGroup>
 

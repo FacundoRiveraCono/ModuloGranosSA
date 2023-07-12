@@ -124,15 +124,6 @@
   <data name="CartaPorteV2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\x64\Release\net6.0-windows\CartaPorteV2.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
   </data>
-  <data name="CartaPorteV2TEST" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\x64\Release\net6.0-windows\CartaPorteV2TEST.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
-  </data>
-  <data name="CartaPorteV2TEST2" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\x64\Release\net6.0-windows\CartaPorteV2TEST2.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
-  </data>
-  <data name="CartaPortev4" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\bin\x64\Release\net6.0-windows\CartaPortev4.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
-  </data>
   <data name="FijacionPrecio" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\x64\Release\net6.0-windows\FijacionPrecio.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-16</value>
   </data>

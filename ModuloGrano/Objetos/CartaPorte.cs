@@ -18,10 +18,11 @@ namespace ModuloGrano.Objetos
 
         public class Value
         {
+            public string nroCTG { get; set; }
             public string CUITSolicitante { get; set; }
             public string nroOrden { get; set; }
-            public string ProvinciaOrigen { get; set; }
-            public string LocalidadOrigen { get; set; }
+            public int ProvinciaOrigen { get; set; }
+            public int LocalidadOrigen { get; set; }
             public string CUITRemitenteComercialVentaPrimaria { get; set; }
             public string CUITRemitenteComercialVentaSecundaria { get; set; }
             public string CUITRemitenteComercialVentaSecundaria2 { get; set; }
@@ -43,6 +44,7 @@ namespace ModuloGrano.Objetos
             public string Planta { get; set; }
             public string CUITPagadorFlete { get; set; }
             public string Observaciones { get; set; }
+            public string Turno { get; set; }
             public int Codigo { get; set; }
             public int TipoCPE { get; set; }
             public int Sucursal { get; set; }

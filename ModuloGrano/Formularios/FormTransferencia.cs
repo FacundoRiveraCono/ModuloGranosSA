@@ -27,6 +27,7 @@ namespace ModuloGrano.Formularios
         private static SAPbouiCOM.Form oForm = null;
         private static SAPbouiCOM.EditText oEditText = null;
         private static SAPbouiCOM.Item oItem = null;
+        private string Hola = "";
         #endregion
 
         #region Constructor
@@ -47,6 +48,8 @@ namespace ModuloGrano.Formularios
             Conexión.TicketRequest oLogin = new Conexión.TicketRequest();
             List<Objetos.Planta> oPlanta = new List<Planta>();
             List<Objetos.Planta> oPlantacmb = new List<Planta>();
+            string CardName = "";
+            int Contador = 0;
             #region Controladores
             Controladores.Transferencia oTransf = new Controladores.Transferencia();
             Controladores.Entrega ctrlEntrega = new Controladores.Entrega();
@@ -143,7 +146,7 @@ namespace ModuloGrano.Formularios
                                 }
                             }
 
-                            if (pVal.ItemUID == "Item_119")
+                            if (pVal.ItemUID == "Item_94")
                             {
                                 XmlDocument xmlExpTime = null;
                                 XmlDocument xmlResp = null;
@@ -179,58 +182,68 @@ namespace ModuloGrano.Formularios
                             }
 
 
-                            if (pVal.ItemUID == "Item_94")
+                            //if (pVal.ItemUID == "Item_94")
+                            //{
+                            //ExportToxml(oform);
+                            //string valor = ((SAPbouiCOM.ButtonCombo)oform.Items.Item(pVal.ItemUID).Specific).Caption;
+
+                            if (pVal.ItemUID == "Item_119")
                             {
-                                string valor = ((SAPbouiCOM.ButtonCombo)oform.Items.Item(pVal.ItemUID).Specific).Caption;
+                                var p = new Process();
 
-                                if (valor == "AFIP")
+                                if (String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item("Item_83").Specific).Value))
                                 {
-                                    var p = new Process();
+                                    int offset = oform.DataSources.DBDataSources.Item(0).Offset;
+                                    string DocEntry = oform.DataSources.DBDataSources.Item(0).GetValue("DocEntry", offset);
 
-                                    if (String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item("Item_83").Specific).Value))
+                                    error = oCartaPorte.ArmarEquivalencias(DocEntry,"Add");
+                                    if (!String.IsNullOrEmpty(error))
+                                        Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox(error);
+                                }
+                                else
+                                {
+                                    Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("CTG Existente, Imposible Reprocesar");
+                                }
+
+
+                            }
+                            if (pVal.ItemUID == "Item_172")
+                            {
+                                try
+                                {
+                                    oform = Comunes.ConexiónSAPB1.oSAPB1appl.Forms.Item(FormUID);
+                                    //ExportToxml(oform);
+
+                                    error = AltaTransferenciaSL(oform);
+                                    if (error != "Ok")
                                     {
-                                        int offset = oform.DataSources.DBDataSources.Item(0).Offset;
-                                        string DocEntry = oform.DataSources.DBDataSources.Item(0).GetValue("DocEntry", offset);
 
-                                        error = oCartaPorte.ArmarEquivalencias(DocEntry);
-                                        if (!String.IsNullOrEmpty(error))
-                                            Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox(error);
+                                        Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("No se puedo crear transferencia, debe reprocesar");
+                                        break;
                                     }
                                     else
                                     {
-                                        Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("CTG Existente, Imposible Reprocesar");
+                                        Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("Transferencia creada con exito");
+
                                     }
-
-
                                 }
-                                if (valor == "SAP")
+                                catch (Exception ex)
                                 {
-                                    try
-                                    {
-                                        oform = Comunes.ConexiónSAPB1.oSAPB1appl.Forms.Item(FormUID);
-                                        //ExportToxml(oform);
 
-                                        error = AltaTransferenciaSL(oform);
-                                        if (error != "Ok")
-                                        {
-
-                                            Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("No se puedo crear transferencia, debe reprocesar");
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("Transferencia creada con exito");
-
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-
-                                        Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText(ex.ToString());
-                                    }
-
+                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText(ex.ToString());
                                 }
+
                             }
+                            if (pVal.ItemUID == "Item_171")
+                            {
+                                //Solo se manda el peso bruto, pero lo se deberia enviar todo el objeto
+                                int offset = oform.DataSources.DBDataSources.Item(0).Offset;
+                                string DocEntry = oform.DataSources.DBDataSources.Item(0).GetValue("DocEntry", offset);
+                                double PBruto = Convert.ToDouble(((SAPbouiCOM.EditText)oform.Items.Item("Item_76").Specific).Value);
+                                error = oCartaPorte.ArmarEquivalencias(DocEntry, "Update");
+                                Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox(error);
+                            }
+                            //}
 
                             break;
 
@@ -255,264 +268,97 @@ namespace ModuloGrano.Formularios
 
                             }
                             break;
-                        case BoEventTypes.et_CHOOSE_FROM_LIST:
-                            SAPbouiCOM.IChooseFromListEvent oCho = null;
-                            oForm = Comunes.ConexiónSAPB1.oSAPB1appl.Forms.Item(FormUID);
-                            oCho = (SAPbouiCOM.IChooseFromListEvent)pVal;
-                            SAPbouiCOM.DataTable oDt = null;
-
-                            if (oCho.ChooseFromListUID == "AB_1" && pVal.ItemUID == "CUITA")
+                        case SAPbouiCOM.BoEventTypes.et_LOST_FOCUS:
+                            Controladores.Intermediario ctrIntermediario = new Controladores.Intermediario();
+                            if (pVal.ItemUID == "CUITA" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_30").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITA").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
 
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_30").Specific).Value = CardName;
                             }
-                            if (oCho.ChooseFromListUID == "AB_2" && pVal.ItemUID == "CUITB")
+                            if (pVal.ItemUID == "CUITB" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_34").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITB").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
 
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_34").Specific).Value = CardName;
                             }
-                            if (oCho.ChooseFromListUID == "AB_3" && pVal.ItemUID == "CUITC")
+                            if (pVal.ItemUID == "CUITC" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_39").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITC").Specific;
-                                    oEdit.Value = val2;
 
-                                }
-                                catch (Exception)
-                                {
-
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_39").Specific).Value = CardName;
+                                //((SAPbouiCOM.EditText)oform.Items.Item("Item_39").Specific).
                             }
-                            if (oCho.ChooseFromListUID == "AB_4" && pVal.ItemUID == "CUITD")
+                            if (pVal.ItemUID == "CUITD" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_42").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITD").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
 
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_42").Specific).Value = CardName;
                             }
-                            if (oCho.ChooseFromListUID == "AB_5" && pVal.ItemUID == "CUITE")
+                            if (pVal.ItemUID == "CUITE" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_46").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITE").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
-
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_46").Specific).Value = CardName;
                             }
-                            if (oCho.ChooseFromListUID == "AB_6" && pVal.ItemUID == "CUITF")
+                            if (pVal.ItemUID == "CUITF" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_51").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITF").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
-
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente dulpicado para CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_51").Specific).Value = CardName;
                             }
-                            if (oCho.ChooseFromListUID == "AB_7" && pVal.ItemUID == "CUITG")
+                            if (pVal.ItemUID == "CUITG" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_54").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITG").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
-
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_54").Specific).Value = CardName;
                             }
-                            if (oCho.ChooseFromListUID == "AB_8" && pVal.ItemUID == "CUITH")
+                            if (pVal.ItemUID == "CUITH" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_122").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITH").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
-
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                              
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_122").Specific).Value = CardName;
                             }
-                            if (oCho.ChooseFromListUID == "AB_9" && pVal.ItemUID == "CUITI")
+                            if (pVal.ItemUID == "CUITI" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_86").Specific).Value = CardName;
+                                oPlanta = oCartaPorte.GetPlantas(Convert.ToInt64(CUIT));
+                                foreach (var item in oPlanta)
                                 {
-
-
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_86").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITI").Specific;
-                                    oEdit.Value = val2;
-                                    Controladores.CartaPorte oCpe = new Controladores.CartaPorte();
-                                    oPlanta = oCpe.GetPlantas(Convert.ToInt64(((SAPbouiCOM.EditText)oform.Items.Item("CUITI").Specific).Value));
-                                    foreach (var item in oPlanta)
-                                    {
-                                        ((SAPbouiCOM.ComboBox)oform.Items.Item("cmbPlanta").Specific).ValidValues.Add(item.Codigo.ToString(), item.Codigo.ToString());
-                                        oPlantacmb.Add(item);
-
-                                    }
-                                }
-                                catch (Exception)
-                                {
-
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
+                                    ((SAPbouiCOM.ComboBox)oform.Items.Item("cmbPlanta").Specific).ValidValues.Add(item.Codigo, item.Codigo);
                                 }
                             }
-                            if (oCho.ChooseFromListUID == "AB_10" && pVal.ItemUID == "CUITJ")
+                            if (pVal.ItemUID == "CUITJ" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_103").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITJ").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
-
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_103").Specific).Value = CardName;
                             }
-                            if (oCho.ChooseFromListUID == "AB_11" && pVal.ItemUID == "CUITK")
+                            if (pVal.ItemUID == "CUITK" && !String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value) && ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value.ToString().Length == 11)
                             {
-                                try
-                                {
-                                    oDt = oCho.SelectedObjects;
-                                    SAPbouiCOM.EditText oEdit = null;
-                                    string val = oDt.GetValue("CardName", 0).ToString();
-                                    string val2 = oDt.GetValue("LicTradNum", 0).ToString();
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("Item_118").Specific;
-                                    oEdit.Value = val;
-                                    oEdit = (SAPbouiCOM.EditText)oForm.Items.Item("CUITK").Specific;
-                                    oEdit.Value = val2;
-                                }
-                                catch (Exception)
-                                {
+                                string CUIT = ((SAPbouiCOM.EditText)oform.Items.Item(pVal.ItemUID).Specific).Value;
+                                CardName = ctrIntermediario.ArmarEquivalencias(CUIT);
+                                ((SAPbouiCOM.EditText)oform.Items.Item("Item_118").Specific).Value = CardName;
+                            }
+                            break;
 
-                                    Comunes.ConexiónSAPB1.oSAPB1appl.StatusBar.SetText("Cliente duplicado para el CUIT", BoMessageTime.bmt_Short, BoStatusBarMessageType.smt_Error);
-                                }
-                               
+                        case BoEventTypes.et_ITEM_PRESSED:
+                            if (pVal.ItemUID == "chkImp" && String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item("Item_83").Specific).Value))
+                            {
+                                BubbleEvent = false;
+                                oform.Mode = SAPbouiCOM.BoFormMode.fm_OK_MODE;
+
                             }
                             break;
 
 
-
                     }
-                    //switch (pVal.EventType)
-                    //{
-                    //    case BoEventTypes.et_FORM_LOAD:
-                    //        //CargarCFLA(FormUID);
-                    //        //CargarCFLB(FormUID);
-                    //        //CargarCFLC(FormUID);
-                    //        //CargarCFLD(FormUID);
-                    //        //CargarCFLE(FormUID);
-                    //        //CargarCFLF(FormUID);
-                    //        //CargarCFLG(FormUID);
-                    //        //CargarCFLH(FormUID);
-                    //        //CargarCFLI(FormUID);
-                    //        //CargarCFLJ(FormUID);
-                    //        //CargarCFLK(FormUID);
-                    //        //EditarFormulario(FormUID);
-                    //        break;
-                    //}
                 }
             }
             catch (Exception ex)
@@ -531,9 +377,10 @@ namespace ModuloGrano.Formularios
             string errorAFIP = "";
             Controladores.CartaPorte ctrCpe = new Controladores.CartaPorte();
             SAPbouiCOM.Form oform = null;
+            //SAPbouiCOM.ComboBox oProcedencia = null;
             try
             {
-               
+
                 if (BusinessObjectInfo.ActionSuccess)
                 {
                     oform = Comunes.ConexiónSAPB1.oSAPB1appl.Forms.Item(BusinessObjectInfo.FormUID);
@@ -543,24 +390,28 @@ namespace ModuloGrano.Formularios
 
                             //Si el numero de CTG esta vacio es porque esta emitiendo, sino, trayendo desde AFIP
                             if (!String.IsNullOrEmpty(((SAPbouiCOM.EditText)oform.Items.Item("Item_83").Specific).Value.ToString()))
-                              {
-                                errorAFIP = ctrCpe.ArmarEquivalencias(BusinessObjectInfo.ObjectKey);
+                            {
+                                errorAFIP = ctrCpe.ArmarEquivalencias(BusinessObjectInfo.ObjectKey,"Add");
 
                                 if (String.IsNullOrEmpty(errorAFIP))
                                 {
-
+                                    string Procedencia = ((SAPbouiCOM.ComboBox)oform.Items.Item("Item_0").Specific).Value;
                                     // oform = Comunes.ConexiónSAPB1.oSAPB1appl.Forms.Item(BusinessObjectInfo.FormUID);
-                                    error = AltaTransferenciaSL(oform);
-                                    if (error != "Ok")
+                                    if (Procedencia != "CAÑADA DE LUQUE" && Procedencia != "EMBARCACION" && Procedencia != "GENERAL BALLIVIAN" && Procedencia != "CORONEL MANUEL LEONCINO RICO")
                                     {
+                                        error = AltaTransferenciaSL(oform);
 
-                                        Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("No se puedo crear transferencia, debe reprocesar");
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("Transferencia creada con exito");
+                                        if (error != "Ok")
+                                        {
 
+                                            Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("No se puedo crear transferencia, debe reprocesar");
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("Transferencia creada con exito");
+
+                                        }
                                     }
                                 }
                                 else
@@ -587,12 +438,16 @@ namespace ModuloGrano.Formularios
                         case BoEventTypes.et_FORM_DATA_LOAD:
                             oform = Comunes.ConexiónSAPB1.oSAPB1appl.Forms.Item(BusinessObjectInfo.FormUID);
                             //Limpiar los valores una vez que se carga el formulario para que no tire error
-                            if (((SAPbouiCOM.ButtonCombo)oform.Items.Item("Item_94").Specific).ValidValues.Count == 0)
-                            {
-                                ((SAPbouiCOM.ButtonCombo)oform.Items.Item("Item_94").Specific).ValidValues.Add("AFIP", "AFIP");
-                                ((SAPbouiCOM.ButtonCombo)oform.Items.Item("Item_94").Specific).ValidValues.Add("SAP", "SAP");
-                            }
+                            //if (((SAPbouiCOM.ButtonCombo)oform.Items.Item("Item_94").Specific).ValidValues.Count == 0)
+                            //{
+                            //    ((SAPbouiCOM.ButtonCombo)oform.Items.Item("Item_94").Specific).ValidValues.Add("AFIP", "AFIP");
+                            //    ((SAPbouiCOM.ButtonCombo)oform.Items.Item("Item_94").Specific).ValidValues.Add("SAP", "SAP");
+                            //   // ((SAPbouiCOM.ButtonCombo)oform.Items.Item("Item_94").Specific).ValidValues.Add("SAP", "SAP");
+                            //}
                             break;
+                            //case BoEventTypes.et_FORM_DATA_UPDATE:
+
+                            //    break;
 
                     }
                 }
@@ -782,6 +637,7 @@ namespace ModuloGrano.Formularios
             try
             {
                 if (!string.IsNullOrEmpty(((SAPbouiCOM.EditText)oForm.Items.Item("Item_112").Specific).Value.ToString()) && !string.IsNullOrEmpty(((SAPbouiCOM.EditText)oForm.Items.Item("Item_28").Specific).Value.ToString()))
+                
                 {
                     oTransfer = new Objetos.Transfer();
 
@@ -790,44 +646,48 @@ namespace ModuloGrano.Formularios
 
                     int offset = oForm.DataSources.DBDataSources.Item(0).Offset;
                     string DocEntry = oForm.DataSources.DBDataSources.Item(0).GetValue("DocEntry", offset);
-                    int PesoNeto = Convert.ToInt32(((SAPbouiCOM.EditText)oForm.Items.Item("Item_80").Specific).Value);
-                    oTransfer.U_PesoNeto = PesoNeto;
+                   
+                      
+                        int PesoBruto = Convert.ToInt32(((SAPbouiCOM.EditText)oForm.Items.Item("Item_76").Specific).Value);
+                        int PTara = Convert.ToInt32(((SAPbouiCOM.EditText)oForm.Items.Item("Item_78").Specific).Value);
+                        //PesoNeto
+                        oTransfer.U_PesoNeto = PesoBruto - PTara;
 
-                    if (((SAPbouiCOM.CheckBox)oForm.Items.Item("Item_165").Specific).Checked)
-                    {
-                        //Sumo los contratos
-                        CanContrato1 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_157").Specific).Value);
-                        CanContrato2 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_159").Specific).Value);
-                        CanContrato3 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_161").Specific).Value);
-                        CanContrato4 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_6").Specific).Value);
-                        CanContrato5 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_13").Specific).Value);
-                        total = CanContrato1 + CanContrato2 + CanContrato3 + CanContrato4 + CanContrato5;
 
-                        if (total == PesoNeto)
+                        if (((SAPbouiCOM.CheckBox)oForm.Items.Item("Item_165").Specific).Checked)
                         {
-                            Error = ctrlTransf.AddTransferencia(oTransfer, Convert.ToInt16(DocEntry));
+                            //Sumo los contratos
+                            CanContrato1 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_157").Specific).Value);
+                            CanContrato2 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_159").Specific).Value);
+                            CanContrato3 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_161").Specific).Value);
+                            CanContrato4 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_6").Specific).Value);
+                            CanContrato5 = Convert.ToDouble(((SAPbouiCOM.EditText)oForm.Items.Item("Item_13").Specific).Value);
+                            total = CanContrato1 + CanContrato2 + CanContrato3 + CanContrato4 + CanContrato5;
+
+                            if (total == oTransfer.U_PesoNeto)
+                            {
+                                Error = ctrlTransf.AddTransferencia(oTransfer, Convert.ToInt16(DocEntry));
+                            }
+                            else
+                            {
+                                Error = "Las cantidades de los contratos no coinciden con el total";
+                            }
+
                         }
                         else
                         {
-                            Error = "Las cantidades de los contratos no coinciden con el total";
+                            Error = ctrlTransf.AddTransferencia(oTransfer, Convert.ToInt16(DocEntry));
                         }
 
+                        if (Error != "Ok")
+                        {
+                            Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox(Error.ToString());
+                        }
                     }
                     else
                     {
-                        Error = ctrlTransf.AddTransferencia(oTransfer, Convert.ToInt16(DocEntry));
-                    }
-
-                    if (Error != "Ok")
-                    {
-                        Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox(Error.ToString());
-                    }
-
-                }
-                else
-                {
-                    Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("debe completar NroContrato/Ubicación");
-                }
+                        Comunes.ConexiónSAPB1.oSAPB1appl.MessageBox("debe completar NroContrato/Ubicación");
+                    }             
 
             }
             catch (Exception)
